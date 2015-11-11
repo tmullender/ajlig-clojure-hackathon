@@ -1,25 +1,30 @@
 (ns cme.ajlig.hackathon.04-more-more-more
   (:require [midje.sweet :refer :all]))
 
-(future-fact "Destructuring"
+(fact "Destructuring"
     ;destructuring allows you to break up arguments
-    ((fn [[a b]] (str b a)) '("A" "B")) => :??
+    ((fn [[a b]] (str b a)) '("A" "B")) => "BA"
 
     ;destructuring maps is the other way round
     ((fn [{one :c two :b three :a}]
-       (:?? one two three)) {:a 2 :b 4 :c 6 :d 8}) => 12
+       (+ one two three)) {:a 2 :b 4 :c 6 :d 8}) => 12
 
     ;but can be made slightly simpler
-    ((fn [{:keys [b c]}] (* b c)) {:a 2 :b 4 :c 6 :d 8}) => :??
+    ((fn [{:keys [b c]}] (* b c)) {:a 2 :b 4 :c 6 :d 8}) => 24
 
              )
+             
+(defn combine [number multiplier]
+  (let [product (* number multiplier)]
+      (+ (mod product 10) (int (/ product 10)))))
 
 (defn luhn? [input]
   (let [numbers (map #(Character/digit % 10) (seq input))
-        sum (reduce + :??)]
+        multipliers (flatten (repeat [1 2]))
+        sum (reduce + (map combine (reverse numbers) multipliers))]
     (zero? (mod sum 10))))
 
-(future-fact "Luhn Check"
+(fact "Luhn Check"
 ;The luhn test can be performed as follows,
 ; 1. Reverse the sequence
 ; 2. Double the even digits
